@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NFC Store</title>
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">NFC Store</div>
+    <div>
+      <a href="/login.html">Customer login</a>
+      <a href="/admin.html">Admin</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1>NFC Tags & Cards</h1>
+    <p class="subtitle">Tap-to-share cards, stickers and fobs. Add to cart and check out below.</p>
+    <div id="products" class="grid"></div>
+
+    <div style="margin-top:40px" class="card">
+      <h2>Checkout</h2>
+      <div id="checkoutMsg"></div>
+      <label>Name</label>
+      <input id="ckName" placeholder="Your name" />
+      <label>Email</label>
+      <input id="ckEmail" placeholder="you@example.com" />
+      <button id="checkoutBtn">Place order</button>
+    </div>
+  </div>
+
+  <div class="cart-panel">
+    <h2>Cart</h2>
+    <div id="cartItems"></div>
+    <div class="cart-total"><span>Total</span><span id="cartTotal">$0.00</span></div>
+  </div>
+
+  <script src="/js/shop.js"></script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>My Account - NFC Store</title>
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">NFC Store</div>
+    <div><a href="/">Storefront</a> <a href="/login.html">Log in</a></div>
+  </div>
+
+  <div class="container">
+    <div id="loadingView" class="center-card"><p>Loading your account...</p></div>
+
+    <div id="activateView" class="center-card" style="display:none">
+      <h1>Activate your account</h1>
+      <p class="subtitle">We emailed a 6-digit code to your inbox. Enter it below and choose a password.</p>
+      <div id="activateMsg"></div>
+      <label>Activation code</label>
+      <input id="code" class="code-input" maxlength="6" placeholder="000000" />
+      <label>Choose a password</label>
+      <input id="password" type="password" placeholder="At least 6 characters" />
+      <button id="activateBtn">Activate account</button>
+    </div>
+
+    <div id="detailsView" style="display:none">
+      <h1>Welcome, <span id="clientName"></span></h1>
+      <p class="subtitle">This page is tied to your personal QR code / link — bookmark it or scan the code again anytime to see your account.</p>
+      <div class="card">
+        <h2>Account details</h2>
+        <p><strong>Email:</strong> <span id="clientEmail"></span></p>
+        <p><strong>NFC ID:</strong> <span id="clientNfc"></span></p>
+        <p><strong>Member since:</strong> <span id="clientSince"></span></p>
+      </div>
+      <h2 style="margin-top:24px">Order history</h2>
+      <table class="table">
+        <thead><tr><th>Order #</th><th>Total</th><th>Date</th></tr></thead>
+        <tbody id="ordersBody"></tbody>
+      </table>
+    </div>
+
+    <div id="errorView" class="center-card" style="display:none">
+      <h1>Account not found</h1>
+      <p id="errorText" class="subtitle"></p>
+    </div>
+  </div>
+
+  <script src="/js/account.js"></script>
+</body>
+</html>

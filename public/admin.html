@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Admin - NFC Store</title>
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">NFC Store — Admin</div>
+    <div><a href="/">Storefront</a> <a href="#" id="logoutLink">Log out</a></div>
+  </div>
+
+  <div class="container">
+    <div id="loginView" class="center-card">
+      <h1>Admin login</h1>
+      <div id="loginMsg"></div>
+      <label>Username</label>
+      <input id="username" value="admin" />
+      <label>Password</label>
+      <input id="password" type="password" placeholder="admin123 (default)" />
+      <button id="loginBtn">Log in</button>
+    </div>
+
+    <div id="dashView" style="display:none">
+      <h1>Create client account</h1>
+      <p class="subtitle">This generates a unique QR code and link for the client, and emails them an activation code.</p>
+      <div id="createMsg"></div>
+      <div class="card">
+        <label>Client name</label>
+        <input id="cName" placeholder="Jane Doe" />
+        <label>Client email (Gmail or any address)</label>
+        <input id="cEmail" placeholder="jane@gmail.com" />
+        <label>NFC tag / card ID (optional)</label>
+        <input id="cNfc" placeholder="e.g. serial printed on the card" />
+        <button id="createBtn">Create account & send activation email</button>
+      </div>
+
+      <div id="newClientResult"></div>
+
+      <h1 style="margin-top:40px">All clients</h1>
+      <table class="table">
+        <thead><tr><th>Name</th><th>Email</th><th>NFC ID</th><th>Status</th><th>Created</th><th>QR / Link</th></tr></thead>
+        <tbody id="clientsBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="/js/admin.js"></script>
+</body>
+</html>

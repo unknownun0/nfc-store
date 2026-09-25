@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Log in - NFC Store</title>
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">NFC Store</div>
+    <div><a href="/">Storefront</a></div>
+  </div>
+
+  <div class="container">
+    <div class="center-card">
+      <h1>Customer login</h1>
+      <p class="subtitle">Already activated your account? Log in here, or use your personal QR code / link.</p>
+      <div id="loginMsg"></div>
+      <label>Email</label>
+      <input id="email" placeholder="you@gmail.com" />
+      <label>Password</label>
+      <input id="password" type="password" />
+      <button id="loginBtn">Log in</button>
+    </div>
+
+    <div id="detailsView" style="display:none">
+      <h1>Welcome, <span id="clientName"></span></h1>
+      <div class="card">
+        <p><strong>Email:</strong> <span id="clientEmail"></span></p>
+        <p><strong>NFC ID:</strong> <span id="clientNfc"></span></p>
+      </div>
+      <h2 style="margin-top:24px">Order history</h2>
+      <table class="table">
+        <thead><tr><th>Order #</th><th>Total</th><th>Date</th></tr></thead>
+        <tbody id="ordersBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="/js/login.js"></script>
+</body>
+</html>
