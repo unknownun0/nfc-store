@@ -9,8 +9,6 @@ const adminRoutes = require('./routes/admin');
 const accountRoutes = require('./routes/account');
 const authRoutes = require('./routes/auth');
 
-initDb();
-
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -27,7 +25,13 @@ app.get('/account/:token', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'account.html'));
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`NFC Store running at http://localhost:${PORT}`);
-});
+// Initialize database on startup (for local dev)
+if (require.main === module) {
+  initDb().catch(console.error);
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`NFC Store running at http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;

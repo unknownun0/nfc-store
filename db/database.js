@@ -1,7 +1,6 @@
-const Database = require('better-sqlite3');
-const path = require('path');
+const { neon } = require('@neondatabase/serverless');
+require('dotenv').config();
 
-const db = new Database(path.join(__dirname, '..', 'data.sqlite'));
-db.pragma('journal_mode = WAL');
+const sql = neon(process.env.DATABASE_URL);
 
-module.exports = db;
+module.exports = sql;

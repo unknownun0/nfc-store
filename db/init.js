@@ -1,49 +1,57 @@
-const db = require('./database');
+const sql = require('./database');
 const bcrypt = require('bcryptjs');
 
-function initDb() {
-  db.exec(`
+async function initDb() {
+  await sql`
     CREATE TABLE IF NOT EXISTS admins (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id SERIAL PRIMARY KEY,
       username TEXT UNIQUE NOT NULL,
       password_hash TEXT NOT NULL
     );
+  `;
 
+  await sql`
     CREATE TABLE IF NOT EXISTS products (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id SERIAL PRIMARY KEY,
       name TEXT NOT NULL,
       description TEXT,
       price REAL NOT NULL,
       image_url TEXT,
       stock INTEGER DEFAULT 100
     );
+  `;
 
+  await sql`
     CREATE TABLE IF NOT EXISTS clients (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id SERIAL PRIMARY KEY,
       name TEXT NOT NULL,
       email TEXT UNIQUE NOT NULL,
       token TEXT UNIQUE NOT NULL,
       status TEXT NOT NULL DEFAULT 'pending',
       password_hash TEXT,
       activation_code TEXT,
-      code_expires_at INTEGER,
+      code_expires_at TIMESTAMP,
       nfc_uid TEXT,
       notes TEXT,
-      created_at INTEGER NOT NULL
+      created_at TIMESTAMP NOT NULL DEFAULT NOW()
     );
+  `;
 
+  await sql`
     CREATE TABLE IF NOT EXISTS orders (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id SERIAL PRIMARY KEY,
       client_id INTEGER,
       guest_name TEXT,
       guest_email TEXT,
       total REAL NOT NULL,
-      created_at INTEGER NOT NULL,
+      created_at TIMESTAMP NOT NULL DEFAULT NOW(),
       FOREIGN KEY (client_id) REFERENCES clients(id)
     );
+  `;
 
+  await sql`
     CREATE TABLE IF NOT EXISTS order_items (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id SERIAL PRIMARY KEY,
       order_id INTEGER NOT NULL,
       product_id INTEGER NOT NULL,
       quantity INTEGER NOT NULL,
@@ -51,23 +59,26 @@ function initDb() {
       FOREIGN KEY (order_id) REFERENCES orders(id),
       FOREIGN KEY (product_id) REFERENCES products(id)
     );
-  `);
+  `;
 
-  const adminExists = db.prepare('SELECT id FROM admins LIMIT 1').get();
-  if (!adminExists) {
+  // Check if admin exists
+  const adminResult = await sql`SELECT id FROM admins LIMIT 1`;
+  if (adminResult.length === 0) {
     const hash = bcrypt.hashSync('admin123', 10);
-    db.prepare('INSERT INTO admins (username, password_hash) VALUES (?, ?)').run('admin', hash);
+    await sql`INSERT INTO admins (username, password_hash) VALUES (${'admin'}, ${hash})`;
     console.log('Seeded default admin -> username: admin / password: admin123 (CHANGE THIS AFTER FIRST LOGIN)');
   }
 
-  const productCount = db.prepare('SELECT COUNT(*) as c FROM products').get().c;
-  if (productCount === 0) {
-    const insert = db.prepare(
-      'INSERT INTO products (name, description, price, image_url, stock) VALUES (?, ?, ?, ?, ?)'
-    );
-    insert.run('NFC Tap Card - Classic', 'Reusable NFC card. Program it once to link to a profile, menu, or payment page.', 12.99, '', 200);
-    insert.run('NFC Tag Sticker (5-pack)', 'Small adhesive NFC stickers for products, packaging, or business cards.', 9.99, '', 200);
-    insert.run('NFC Keychain Fob', 'Durable NFC fob for keys or bags.', 14.99, '', 150);
+  // Seed products if empty
+  const productResult = await sql`SELECT COUNT(*) as c FROM products`;
+  if (productResult[0].c === 0) {
+    await sql`
+      INSERT INTO products (name, description, price, image_url, stock) VALUES
+      ('NFC Tap Card - Classic', 'Reusable NFC card. Program it once to link to a profile, menu, or payment page.', 12.99, '', 200),
+      ('NFC Tag Sticker (5-pack)', 'Small adhesive NFC stickers for products, packaging, or business cards.', 9.99, '', 200),
+      ('NFC Keychain Fob', 'Durable NFC fob for keys or bags.', 14.99, '', 150)
+    `;
+    console.log('Seeded default products');
   }
 }
 

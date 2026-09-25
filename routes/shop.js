@@ -1,19 +1,19 @@
 const express = require('express');
-const db = require('../db/database');
+const sql = require('../db/database');
 
 const router = express.Router();
 
-router.get('/products', (req, res) => {
-  res.json(db.prepare('SELECT * FROM products').all());
+router.get('/products', async (req, res) => {
+  res.json(await sql`SELECT * FROM products`);
 });
 
-router.post('/checkout', (req, res) => {
+router.post('/checkout', async (req, res) => {
   const { items, guest_name, guest_email, client_id } = req.body;
   if (!Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ error: 'Cart is empty' });
   }
 
-  const products = db.prepare('SELECT * FROM products').all();
+  const products = await sql`SELECT * FROM products`;
   const productMap = Object.fromEntries(products.map((p) => [p.id, p]));
 
   let total = 0;
@@ -23,24 +23,27 @@ router.post('/checkout', (req, res) => {
     total += p.price * item.quantity;
   }
 
-  const insertOrder = db.prepare(
-    `INSERT INTO orders (client_id, guest_name, guest_email, total, created_at) VALUES (?, ?, ?, ?, ?)`
-  );
-  const insertItem = db.prepare(
-    `INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)`
-  );
+  try {
+    const orderResult = await sql`
+      INSERT INTO orders (client_id, guest_name, guest_email, total)
+      VALUES (${client_id || null}, ${guest_name || null}, ${guest_email || null}, ${total})
+      RETURNING id
+    `;
+    const orderId = orderResult[0].id;
 
-  const runTransaction = db.transaction(() => {
-    const info = insertOrder.run(client_id || null, guest_name || null, guest_email || null, total, Date.now());
     for (const item of items) {
       const p = productMap[item.productId];
-      insertItem.run(info.lastInsertRowid, p.id, item.quantity, p.price);
+      await sql`
+        INSERT INTO order_items (order_id, product_id, quantity, price)
+        VALUES (${orderId}, ${p.id}, ${item.quantity}, ${p.price})
+      `;
     }
-    return info.lastInsertRowid;
-  });
 
-  const orderId = runTransaction();
-  res.json({ ok: true, orderId, total });
+    res.json({ ok: true, orderId, total });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Could not process order' });
+  }
 });
 
 module.exports = router;
